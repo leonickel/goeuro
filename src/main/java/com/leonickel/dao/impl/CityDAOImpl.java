@@ -4,6 +4,7 @@ import static com.leonickel.util.DefaultProperties.GO_EURO_URL;
 import static com.leonickel.util.DefaultProperties.GO_EURO_URL_CONNECT_TIMEOUT;
 import static com.leonickel.util.DefaultProperties.GO_EURO_URL_MAX_RETRY;
 import static com.leonickel.util.DefaultProperties.GO_EURO_URL_READ_TIMEOUT;
+import static com.leonickel.exception.CityRetrievalException.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.leonickel.dao.CityDAO;
+import com.leonickel.exception.CityRetrievalException;
+import com.leonickel.exception.NoCitiesFoundException;
 import com.leonickel.model.City;
 import com.leonickel.util.PropertyFinder;
 
@@ -39,34 +42,41 @@ public class CityDAOImpl implements CityDAO {
 		CloseableHttpResponse response = null;
 		HttpGet method = null;
 		try {
-			method = new HttpGet(getUrl(name));
-			method.setConfig(requestConfig);
+			method = createHttpGet(name);
 			logger.info("requested url: [{}]", method.getURI());
 			response = httpClient.execute(method);
-			logger.info("successfull http call: [{}] response: [{}]", method.getURI());
-		    return gson.fromJson(new InputStreamReader(response.getEntity().getContent()), City[].class);
+			logger.info("successfull http call: [{}]", method.getURI());
+			final City[] cities = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), City[].class);
+			if(cities == null || cities.length == 0) {
+				throw new NoCitiesFoundException("no cities were found");
+			}
+			logger.info("found [{}] cities", cities.length);
+			return cities;
 		} catch (ConnectTimeoutException e) {
 			logHttpErrors("connect timeout when trying to connect on url: [{}]"); 
 			abort(method);
+			throw new CityRetrievalException("connect timeout when trying to connect on url", CONNECT_TIMEOUT_CODE);
 		} catch (SocketTimeoutException e) {
 			logHttpErrors("read timeout when trying to get response from url: [{}]"); 
 			abort(method);
+			throw new CityRetrievalException("read timeout when trying to get response from url", READ_TIMEOUT_CODE);
 		} catch (ClientProtocolException e) {
 			logHttpErrors("http client error when trying to execute this url: [{}]"); 
 			abort(method);
+			throw new CityRetrievalException("http client error when trying to execute this url", HTTP_CLIENT_ERROR_CODE);
 		} catch (IOException e) {
 			logger.error("unknown i/o error when trying to execute this url: [{}] exception: [{}]", PropertyFinder.getPropertyValue(GO_EURO_URL), e);
 			abort(method);
+			throw new CityRetrievalException("unknown i/o error when trying to execute this url", UNKNOWN_ERROR_CODE);
 		} finally {
 			if(response != null) {
 				try {
 					response.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("error on closing CloseableHttpResponse object [{}]", e);
 				}
 			}
 		}
-		return null;
 	}
 	
 	private void logHttpErrors(String message) {
@@ -79,17 +89,32 @@ public class CityDAOImpl implements CityDAO {
 		}
 	}
 
+	private HttpGet createHttpGet(String name) {
+		final HttpGet method = new HttpGet(getUrl(name));
+		method.setConfig(requestConfig);
+		return method;
+	}
+
 	private CloseableHttpClient createHttpClient() {
-		return HttpClients.custom().setRetryHandler(new StandardHttpRequestRetryHandler(Integer.parseInt(
-				PropertyFinder.getPropertyValue(GO_EURO_URL_MAX_RETRY)), true)).build();
+		return HttpClients.custom().setRetryHandler(new StandardHttpRequestRetryHandler(getMaxRetryValue(), true)).build();
 	}
 	
 	private RequestConfig createRequestConfig() {
-		return RequestConfig.custom()
-				.setSocketTimeout(Integer.parseInt(PropertyFinder.getPropertyValue(GO_EURO_URL_READ_TIMEOUT)))
-				.setConnectTimeout(Integer.parseInt(PropertyFinder.getPropertyValue(GO_EURO_URL_CONNECT_TIMEOUT))).build();
+		return RequestConfig.custom().setSocketTimeout(getSocketTimeoutValue()).setConnectTimeout(getConnectTimeoutValue()).build();
 	}
 	
+	private int getMaxRetryValue() {
+		return Integer.parseInt(PropertyFinder.getPropertyValue(GO_EURO_URL_MAX_RETRY));
+	}
+
+	private int getSocketTimeoutValue() {
+		return Integer.parseInt(PropertyFinder.getPropertyValue(GO_EURO_URL_READ_TIMEOUT));
+	}
+
+	private int getConnectTimeoutValue() {
+		return Integer.parseInt(PropertyFinder.getPropertyValue(GO_EURO_URL_CONNECT_TIMEOUT));
+	}
+
 	private String getUrl(String name) {
 		return new StringBuilder(PropertyFinder.getPropertyValue(GO_EURO_URL)).append("/").append(name).toString(); 
 	}

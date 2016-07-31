@@ -6,7 +6,9 @@ public enum DefaultProperties {
 	GO_EURO_URL_CONNECT_TIMEOUT("goeuro.url.connect-timeout", "1000"),
 	GO_EURO_URL_MAX_RETRY("goeuro.url.max-retry", "3"),
 	
-	CSV_OUTPUT_PATH("csv.output-path", ".")
+	CSV_FILE_NAME("csv.file-name", "result.csv"),
+	CSV_OUTPUT_PATH("csv.output-path", "./"),
+	CSV_SEPARATOR_VALUE("csv.separator-value", ",")
 	;
 	
 	private String property;

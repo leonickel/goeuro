@@ -3,3 +3,4 @@
 /target/
 .settings/
 application.log
+result.csv
