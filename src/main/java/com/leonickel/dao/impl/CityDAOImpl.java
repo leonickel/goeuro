@@ -1,5 +1,10 @@
 package com.leonickel.dao.impl;
 
+import static com.leonickel.util.DefaultProperties.GO_EURO_URL;
+import static com.leonickel.util.DefaultProperties.GO_EURO_URL_CONNECT_TIMEOUT;
+import static com.leonickel.util.DefaultProperties.GO_EURO_URL_MAX_RETRY;
+import static com.leonickel.util.DefaultProperties.GO_EURO_URL_READ_TIMEOUT;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
@@ -13,17 +18,21 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.leonickel.dao.CityDAO;
-import com.leonickel.dao.GoEuroProperties;
 import com.leonickel.model.City;
+import com.leonickel.util.PropertyFinder;
 
 @Singleton
 public class CityDAOImpl implements CityDAO {
 
+	private Logger logger = LoggerFactory.getLogger("application");
 	private final Gson gson = new Gson();
-	private final CloseableHttpClient httpClient = HttpClients.createDefault();
+	private final CloseableHttpClient httpClient = createHttpClient();
 	private final RequestConfig requestConfig = createRequestConfig();
 
 	public City[] getCities(String name) {
@@ -32,20 +41,22 @@ public class CityDAOImpl implements CityDAO {
 		try {
 			method = new HttpGet(getUrl(name));
 			method.setConfig(requestConfig);
+			logger.info("requested url: [{}]", method.getURI());
 			response = httpClient.execute(method);
+			logger.info("successfull http call: [{}] response: [{}]", method.getURI());
 		    return gson.fromJson(new InputStreamReader(response.getEntity().getContent()), City[].class);
 		} catch (ConnectTimeoutException e) {
+			logHttpErrors("connect timeout when trying to connect on url: [{}]"); 
 			abort(method);
-			e.printStackTrace();
 		} catch (SocketTimeoutException e) {
+			logHttpErrors("read timeout when trying to get response from url: [{}]"); 
 			abort(method);
-			e.printStackTrace();
 		} catch (ClientProtocolException e) {
+			logHttpErrors("http client error when trying to execute this url: [{}]"); 
 			abort(method);
-			e.printStackTrace();
 		} catch (IOException e) {
+			logger.error("unknown i/o error when trying to execute this url: [{}] exception: [{}]", PropertyFinder.getPropertyValue(GO_EURO_URL), e);
 			abort(method);
-			e.printStackTrace();
 		} finally {
 			if(response != null) {
 				try {
@@ -58,27 +69,29 @@ public class CityDAOImpl implements CityDAO {
 		return null;
 	}
 	
+	private void logHttpErrors(String message) {
+		logger.error(message, PropertyFinder.getPropertyValue(GO_EURO_URL));
+	}
+	
 	private void abort(HttpGet method) {
 		if(method != null) {
 			method.abort();
 		}
 	}
 
+	private CloseableHttpClient createHttpClient() {
+		return HttpClients.custom().setRetryHandler(new StandardHttpRequestRetryHandler(Integer.parseInt(
+				PropertyFinder.getPropertyValue(GO_EURO_URL_MAX_RETRY)), true)).build();
+	}
+	
 	private RequestConfig createRequestConfig() {
 		return RequestConfig.custom()
-				.setSocketTimeout(Integer.parseInt(getPropertyValue(GoEuroProperties.GO_EURO_URL_READ_TIMEOUT.property(), 
-						GoEuroProperties.GO_EURO_URL_READ_TIMEOUT.defaultValue())))
-				.setConnectTimeout(Integer.parseInt(getPropertyValue(GoEuroProperties.GO_EURO_URL_CONNECT_TIMEOUT.property(), 
-						GoEuroProperties.GO_EURO_URL_CONNECT_TIMEOUT.defaultValue()))).build();
+				.setSocketTimeout(Integer.parseInt(PropertyFinder.getPropertyValue(GO_EURO_URL_READ_TIMEOUT)))
+				.setConnectTimeout(Integer.parseInt(PropertyFinder.getPropertyValue(GO_EURO_URL_CONNECT_TIMEOUT))).build();
 	}
 	
 	private String getUrl(String name) {
-		return new StringBuilder(getPropertyValue(GoEuroProperties.GO_EURO_URL.property(), GoEuroProperties.GO_EURO_URL.defaultValue()))
-		.append("/").append(name).toString(); 
-	}
-	
-	private String getPropertyValue(String propertyName, String defaultValue) {
-		return System.getProperty(propertyName, defaultValue);
+		return new StringBuilder(PropertyFinder.getPropertyValue(GO_EURO_URL)).append("/").append(name).toString(); 
 	}
 
 }

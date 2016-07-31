@@ -1,20 +1,20 @@
 package com.leonickel.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class City {
 
-	private int _id;
+	@SerializedName("_id")
+	private int id;
+	
+	@SerializedName("name")
 	private String name;
+	
+	@SerializedName("type")
 	private String type;
 	
-	private GeoPosition geo_position;
-
-	public int get_id() {
-		return _id;
-	}
-
-	public void set_id(int _id) {
-		this._id = _id;
-	}
+	@SerializedName("geo_position")
+	private GeoPosition geoPosition;
 
 	public String getName() {
 		return name;
@@ -32,13 +32,20 @@ public class City {
 		this.type = type;
 	}
 
-	public GeoPosition getGeo_position() {
-		return geo_position;
+	public int getId() {
+		return id;
 	}
 
-	public void setGeo_position(GeoPosition geo_position) {
-		this.geo_position = geo_position;
+	public void setId(int id) {
+		this.id = id;
 	}
-	
-	
+
+	public GeoPosition getGeoPosition() {
+		return geoPosition;
+	}
+
+	public void setGeoPosition(GeoPosition geoPosition) {
+		this.geoPosition = geoPosition;
+	}
+
 }

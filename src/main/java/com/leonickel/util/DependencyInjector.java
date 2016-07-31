@@ -1,4 +1,4 @@
-package com.leonickel;
+package com.leonickel.util;
 
 import com.google.inject.AbstractModule;
 import com.leonickel.dao.CityDAO;
