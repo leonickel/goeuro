@@ -4,3 +4,4 @@
 .settings/
 application.log
 result.csv
+dependency-reduced-pom.xml
