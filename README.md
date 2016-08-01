@@ -58,7 +58,7 @@ Note: in case [CITY_NAME] it's a compound word like Sao Paulo, you should wrap l
 ## Output file
 After system has executed, it produces a CSV file containing response data. This file has the following information: id,name,type,latitude,longitude of each city returned by goeuro's endpoint. Below some response to illustrate:
 
-```376217,Berlin,location,52.52437,13.41053
+```shell 376217,Berlin,location,52.52437,13.41053
 448103,Berlingo,location,45.50298,10.04366
 425332,Berlingerode,location,51.45775,10.2384```
 
