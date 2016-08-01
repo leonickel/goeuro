@@ -45,12 +45,12 @@ public class CityDAOImpl implements CityDAO {
 			method = createHttpGet(name);
 			logger.info("requested url: [{}]", method.getURI());
 			response = httpClient.execute(method);
-			logger.info("successfull http call: [{}]", method.getURI());
+			logger.info("successfull request: [{}]", method.getURI());
 			final City[] cities = gson.fromJson(new InputStreamReader(response.getEntity().getContent()), City[].class);
 			if(cities == null || cities.length == 0) {
 				throw new NoCitiesFoundException("no cities were found");
 			}
-			logger.info("found [{}] cities", cities.length);
+			logger.info("found [{}] cities in response", cities.length);
 			return cities;
 		} catch (ConnectTimeoutException e) {
 			logHttpErrors("connect timeout when trying to connect on url: [{}]"); 
