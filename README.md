@@ -27,7 +27,8 @@ The fat jar called 'GoEuroTest.jar' should be generated at target/ folder. To ru
 
 where [CITY_NAME] parameter it's the name or partial name to the city to be searched. The system should output some logs describing what it's doing step by step, as below:
 
-```shell 2016-08-01 13:35:44,413 [INFO] [main] [application] default path for application.log file: [.]
+```console
+2016-08-01 13:35:44,413 [INFO] [main] [application] default path for application.log file: [.]
 2016-08-01 13:35:44,416 [INFO] [main] [application] city name received: [Berlin]
 2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV file name: [result.csv]
 2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV separator value: [,]
@@ -58,7 +59,8 @@ Note: in case [CITY_NAME] it's a compound word like Sao Paulo, you should wrap l
 ## Output file
 After system has executed, it produces a CSV file containing response data. This file has the following information: id,name,type,latitude,longitude of each city returned by goeuro's endpoint. Below some response to illustrate:
 
-```shell 376217,Berlin,location,52.52437,13.41053
+```console
+376217,Berlin,location,52.52437,13.41053
 448103,Berlingo,location,45.50298,10.04366
 425332,Berlingerode,location,51.45775,10.2384```
 
