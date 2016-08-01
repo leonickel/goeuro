@@ -90,7 +90,7 @@ public class CityDAOImpl implements CityDAO {
 	}
 
 	private HttpGet createHttpGet(String name) {
-		final HttpGet method = new HttpGet(getUrl(name));
+		final HttpGet method = new HttpGet(getUrl(name.replaceAll(" ", "%20")));
 		method.setConfig(requestConfig);
 		return method;
 	}
