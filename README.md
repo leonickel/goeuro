@@ -8,7 +8,7 @@ At this section I'll list and explain which technologies I've chosed to work on:
 * GSON - This library was used to convert goeuro's response endpoint into objects from the system. Again, it's very simple and lightweight [https://github.com/google/gson]
 * Http Components - This library helps on HTTP requests/responses and is pretty simple to set timeouts, retries and other directives [https://hc.apache.org/]
 * Logback - Async logging library [http://logback.qos.ch/]
-* JUnit - unit tests framework to test eache class and method separateds [http://junit.org/junit4/]
+* JUnit - unit tests framework to test each class and method individually [http://junit.org/junit4/]
 * Mockito - Framework to create objects mocks helping unit tests to segregate layers and objects dependencies [http://mockito.org/]
 
 ## Motivations
@@ -36,7 +36,8 @@ where [CITY_NAME] parameter it's the name or partial name to the city to be sear
 2016-08-01 13:35:44,986 [INFO] [main] [application] requested url: [http://api.goeuro.com/api/v2/position/suggest/en//Berlin]
 2016-08-01 13:35:45,660 [INFO] [main] [application] successfull request: [http://api.goeuro.com/api/v2/position/suggest/en//Berlin]
 2016-08-01 13:35:45,672 [INFO] [main] [application] found [8] cities in response
-2016-08-01 13:35:45,675 [INFO] [main] [application] successfull generated file: [result.csv] in path: [./]```
+2016-08-01 13:35:45,675 [INFO] [main] [application] successfull generated file: [result.csv] in path: [./]
+```
 
 ## Optional Parameters
 The system was designed to accept overriding some parameters to change timeouts, csv file name, csv file path and so on. Below the table of parameters and default values in case of not overriding:
@@ -52,6 +53,7 @@ The system was designed to accept overriding some parameters to change timeouts,
 |csv.separator-value|,|
 
 To run with all these parameters in command line, execute the command below:
+
 > `java -jar -Dgoeuro.url=http://api.goeuro.com/api/v2/position/suggest/en/ -Dgoeuro.url.read-timeout=5000 -Dgoeuro.url.connect-timeout=2000 -Dcsv.file-name=result.csv -Dcsv.separator-value=, -Dcsv.output-path=. GoEuroTest.jar [CITY_NAME]`
 
 Note: in case [CITY_NAME] it's a compound word like Sao Paulo, you should wrap like this: "Sao Paulo"
@@ -62,24 +64,33 @@ After system has executed, it produces a CSV file containing response data. This
 ```console
 376217,Berlin,location,52.52437,13.41053
 448103,Berlingo,location,45.50298,10.04366
-425332,Berlingerode,location,51.45775,10.2384```
+425332,Berlingerode,location,51.45775,10.2384
+425326,Bernau bei Berlin,location,52.67982,13.58708
+314826,Berlin Tegel,airport,52.5548,13.28903
+314827,Berlin Schönefeld,airport,52.3887261,13.5180874
+334196,Berlin Hbf,station,52.525589,13.369548
+333977,Berlin Ostbahnhof,station,52.510972,13.434567
+```
 
 ## FAQ and Troubleshooting
 * Running application without provide any city name 
 
 The system will print error message like this:
 
-> Please provide at least one argument (city name) to run this application, exitting...
-
+```console
+Please provide at least one argument (city name) to run this application, exitting...
+```
 and will exit. This parameter is mandatory and should be passed by at startup.
 
 * Error on connection/getting data from goeuro's url: This could happen if there's some issue with goeuro's endpoint or speed problems with internet. If you see this message on application log:
 
-> 2016-08-01 13:54:52,977 [ERROR] [main] [application] read timeout when trying to get response from url: [http://api.goeuro.com/api/v2/position/suggest/en/]
-
+```console
+2016-08-01 13:54:52,977 [ERROR] [main] [application] read timeout when trying to get response from url: [http://api.goeuro.com/api/v2/position/suggest/en/]
+```
 try increasing the 'goeuro.url.read-timeout' parameter value. If you see this message:
 
-> 2016-08-01 13:54:52,977 [ERROR] [main] [application] connect timeout when trying to connect on url: [http://api.goeuro.com/api/v2/position/suggest/en/]
-
+```console
+2016-08-01 13:54:52,977 [ERROR] [main] [application] connect timeout when trying to connect on url: [http://api.goeuro.com/api/v2/position/suggest/en/]
+```
 try increasing 'goeuro.url.connect-timeout' parameter value instead.
  
