@@ -24,18 +24,25 @@ The system produces a fat jar at the end of 'package' step. To generate it, it's
 The fat jar called 'GoEuroTest.jar' should be generated at target/ folder. To run the application, just execute the command bellow:
 > `java -jar target/GoEuroTest.jar [CITY_NAME]`
 
-where [CITY_NAME] parameter it's the name or partial name to the city to be searched.
-The system should output some logs describing what it's doing step by step, as below:
----
-> 2016-08-01 13:35:44,413 [INFO] [main] [application] default path for application.log file: [.]
-> 2016-08-01 13:35:44,416 [INFO] [main] [application] city name received: [Berlin]
-> 2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV file name: [result.csv]
-> 2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV separator value: [,]
-> 2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV output path: [./]
-> 2016-08-01 13:35:44,986 [INFO] [main] [application] requested url: [http://api.goeuro.com/api/v2/position/suggest/en//Berlin]
-> 2016-08-01 13:35:45,660 [INFO] [main] [application] successfull request: [http://api.goeuro.com/api/v2/position/suggest/en//Berlin]
-> 2016-08-01 13:35:45,672 [INFO] [main] [application] found [8] cities in response
-> 2016-08-01 13:35:45,675 [INFO] [main] [application] successfull generated file: [result.csv] in path: [./] 
+where [CITY_NAME] parameter it's the name or partial name to the city to be searched. The system should output some logs describing what it's doing step by step, as below:
+
+2016-08-01 13:35:44,413 [INFO] [main] [application] default path for application.log file: [.]
+
+2016-08-01 13:35:44,416 [INFO] [main] [application] city name received: [Berlin]
+
+2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV file name: [result.csv]
+
+2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV separator value: [,]
+
+2016-08-01 13:35:44,419 [INFO] [main] [application] response CSV output path: [./]
+
+2016-08-01 13:35:44,986 [INFO] [main] [application] requested url: [http://api.goeuro.com/api/v2/position/suggest/en//Berlin]
+
+2016-08-01 13:35:45,660 [INFO] [main] [application] successfull request: [http://api.goeuro.com/api/v2/position/suggest/en//Berlin]
+
+2016-08-01 13:35:45,672 [INFO] [main] [application] found [8] cities in response
+
+2016-08-01 13:35:45,675 [INFO] [main] [application] successfull generated file: [result.csv] in path: [./] 
 
 ## Optional Parameters
 The system was designed to accept overriding some parameters to change timeouts, csv file name, csv file path and so on. Below the table of parameters and default values in case of not overriding:
@@ -59,21 +66,26 @@ Note: in case [CITY_NAME] it's a compound word like Sao Paulo, you should wrap l
 After system has executed, it produces a CSV file containing response data. This file has the following information: id,name,type,latitude,longitude of each city returned by goeuro's endpoint. Bellow some response to illustrate:
 
 `376217,Berlin,location,52.52437,13.41053`
+
 `448103,Berlingo,location,45.50298,10.04366`
+
 `425332,Berlingerode,location,51.45775,10.2384`
 
 ## FAQ and Troubleshooting
 * Running application without provide any city name 
 
 The system will print error message like this:
+
 > Please provide at least one argument (city name) to run this application, exitting...
 
 and will exit. This parameter is mandatory and should be passed by at startup.
 
 * Error on connection/getting data from goeuro's url: This could happen if there's some issue with goeuro's endpoint or speed problems with internet. If you see this message on application log:
+
 > 2016-08-01 13:54:52,977 [ERROR] [main] [application] read timeout when trying to get response from url: [http://api.goeuro.com/api/v2/position/suggest/en/]
 
 try increasing the 'goeuro.url.read-timeout' parameter value. If you see this message:
+
 > 2016-08-01 13:54:52,977 [ERROR] [main] [application] connect timeout when trying to connect on url: [http://api.goeuro.com/api/v2/position/suggest/en/]
 
 try increasing 'goeuro.url.connect-timeout' parameter value instead.
