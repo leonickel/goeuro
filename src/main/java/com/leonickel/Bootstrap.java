@@ -20,7 +20,7 @@ public class Bootstrap {
 	public static void main(String[] args) {
 		if(args.length < 1) {
 			logger.error("Please provide at least one argument (city name) to run this application, exitting...");
-			System.exit(9);
+			return; //instead of System.exit(9) for unit tests flow
 		}
 		logger.info("default path for application.log file: [.]");
 		logger.info("city name received: [{}]", args[0]);

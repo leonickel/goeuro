@@ -2,8 +2,8 @@ package com.leonickel.util;
 
 public enum DefaultProperties {
 	GO_EURO_URL("goeuro.url", "http://api.goeuro.com/api/v2/position/suggest/en/"),
-	GO_EURO_URL_READ_TIMEOUT("goeuro.url.read-timeout", "5000"),
-	GO_EURO_URL_CONNECT_TIMEOUT("goeuro.url.connect-timeout", "1000"),
+	GO_EURO_URL_READ_TIMEOUT("goeuro.url.read-timeout", "10000"),
+	GO_EURO_URL_CONNECT_TIMEOUT("goeuro.url.connect-timeout", "5000"),
 	GO_EURO_URL_MAX_RETRY("goeuro.url.max-retry", "3"),
 	
 	CSV_FILE_NAME("csv.file-name", "result.csv"),

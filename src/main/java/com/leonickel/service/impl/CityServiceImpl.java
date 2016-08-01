@@ -16,4 +16,9 @@ public class CityServiceImpl implements CityService {
 	public City[] getCities(String name) {
 		return cityDAO.getCities(name);
 	}
+	
+	//For unit testing purposes
+	public void setCityDAO(CityDAO cityDAO) {
+		this.cityDAO = cityDAO;
+	}
 }
